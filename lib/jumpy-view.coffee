@@ -41,7 +41,6 @@ class JumpyView extends View
       @clearKeys()
       $('#status-bar-jumpy').html("")
       atom.workspaceView.eachEditorView (e) ->
-          e.find('.jumpy').remove()
           e.removeClass 'jumpy-jump-mode'
       atom.keymap.keyBindings = @backedUpKeyBindings
       @detach()
@@ -88,7 +87,6 @@ class JumpyView extends View
     atom.workspaceView.eachEditorView (editorView) ->
         return if !editorView.active
         editorView.addClass 'jumpy-jump-mode'
-        editorView.find('.scroll-view .overlayer').append("<div class='jumpy labels'></div>")
 
         activePane = editorView.getPane()
         verticalScrollBar = activePane.find '.vertical-scrollbar'
@@ -100,17 +98,17 @@ class JumpyView extends View
             return lineNumber > editorView.getFirstVisibleScreenRow() &&
                 lineNumber < editorView.getLastVisibleScreenRow()
         wordsPattern = /([\w]){2,}/g
-        for line, lineNumber in editorView.getEditor().buffer.lines
+        editor = editorView.getEditor()
+        for line, lineNumber in editor.buffer.lines
             if line != ''
                 while ((word = wordsPattern.exec(line)) != null)
                     if isScreenRowVisible(lineNumber + 1)
                         keyLabel = nextKeys.shift()
                         position = {row: lineNumber, column: word.index}
-                        that.allPositions[keyLabel] = { editor: editorView.getEditor().id, position: position } # creates a reference.
-                        pixelPosition = editorView.pixelPositionForBufferPosition([lineNumber, word.index])
-                        labelElement = $("<div class='jumpy label'>#{keyLabel}</div>")
-                            .css({left: pixelPosition.left, top: pixelPosition.top})
-                        editorView.find(".jumpy.labels").append(labelElement)
+                        that.allPositions[keyLabel] = { editor: editor.id, position: position } # creates a reference.
+                        marker = editor.markBufferRange([[87,5], [87,8]], invalidate: 'never')
+                        editor.decorateMarker(marker, type: 'highlight', class: 'current-result')
+                        #labelElement = "#{keyLabel}" lineNumber, word.index])
 
   clear: ->
       @clearJumpMode()
