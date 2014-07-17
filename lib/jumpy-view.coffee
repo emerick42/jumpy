@@ -106,8 +106,8 @@ class JumpyView extends View
                         keyLabel = nextKeys.shift()
                         position = {row: lineNumber, column: word.index}
                         that.allPositions[keyLabel] = { editor: editor.id, position: position } # creates a reference.
-                        marker = editor.markBufferRange([[87,5], [87,8]], invalidate: 'never')
-                        editor.decorateMarker(marker, type: 'highlight', class: 'current-result')
+                        marker = editor.markBufferRange([[lineNumber, word.index], [lineNumber, word.index + 2]])
+                        editor.decorateMarker(marker, type: 'highlight', class: 'my-decorator')
                         #labelElement = "#{keyLabel}" lineNumber, word.index])
 
   clear: ->
